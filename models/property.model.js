@@ -32,6 +32,10 @@ const propertySchema = new mongoose.Schema(
     userId: {
       type: String,
     },
+    landlordLeaseAgreement: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'LandlordLeaseAgreement'
+    }
   },
   { timestamps: true }
 );

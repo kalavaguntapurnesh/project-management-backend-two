@@ -2,6 +2,8 @@ const userModel = require("../models/user.model.js");
 const bcrypt = require("bcryptjs");
 const tokenModel = require("../models/token.model.js");
 const propertyModel = require("../models/property.model.js");
+const LandlordLeaseModel = require('../models/landlordLeaseAgreement.js')
+const TenantLeaseModel = require('../models/tenantLeaseAgreement.js')
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { log } = require("console");
@@ -486,3 +488,150 @@ exports.resetPassword = async (req, res) => {
     }
   });
 };
+
+
+exports.addLandlordLeaseProperty = async(req,res)=>{
+  const {
+    RentAmount,
+    SecurityDeposit,
+    LeaseDuration,
+    StartDate,
+    EndDate,
+    LeaseTermsAndDescription,
+    Status,
+    Late_Fee_Policy,
+    Rent_Increase_policy,
+    Renewel_Option
+} = req.body;
+
+const propertyId = req.query.propertyId || req.body.propertyId;
+
+try {
+    
+    if (!propertyId) {
+        return res.status(400).json({ message: "PropertyID  are required" });
+    }
+
+    const propertyExists = await propertyModel.findById(propertyId);
+    if (!propertyExists) {
+        return res.status(400).json({ message: "Property does not exist" });
+    }
+    const newLandlordLeaseAgreement = new LandlordLeaseModel({
+        PropertyId: propertyId,
+        RentAmount,
+        SecurityDeposit,
+        LeaseDuration,
+        StartDate,
+        EndDate,
+        LeaseTermsAndDescription,
+        Status,
+        Late_Fee_Policy,
+        Rent_Increase_policy,
+        Renewel_Option
+    });
+
+    await newLandlordLeaseAgreement.save();
+
+    res.status(201).json({ message: "Landlord Lease Agreement created successfully", LandlordLeaseAgreement: newLandlordLeaseAgreement });
+} catch (error) {
+    console.error("Error while creating Landlord Lease Agreement:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+}
+}
+
+
+exports.getAllActiveProperties = async (req, res) => {
+  
+  try {
+    const activeProperties = await propertyModel.find({}).populate({
+      path: 'landlordLeaseAgreement', 
+      match: { LeaseAcceptanceStatus: null }, 
+    });
+
+
+    if(activeProperties.length > 0){
+      return res.status(200).json({ data: activeProperties });
+    }
+    else{
+      return res.status(200).json({ message: 'At the moment No properties available' });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Something went wrong' });
+  }
+};
+
+
+
+exports.getLandlordLeaseTerms = async (req,res) => {
+
+    const landlordLeaseAgreementId = req.query.landlordLeaseAgreementId || req.body.landlordLeaseAgreementId; 
+    if(!landlordLeaseAgreementId)
+    {
+        return res.status(400).json({message: "Property ID is required!"})
+    }
+
+    try {
+      const landlordLeaseTerms = await LandlordLeaseModel.find({
+        _id: landlordLeaseAgreementId,
+      });
+      return res.status(200).json({ data: landlordLeaseTerms });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ error });
+    }
+
+} 
+
+
+exports.addTenantLeaseAgreement = async(req,res)=>{
+  const { AcceptanceStatus, leaseTerms, Signature } = req.body;
+
+  const propertyId = req.query.propertyId || req.body.propertyId;
+  // const tenantId = req.query.tenantId || req.body.tenantId;
+  const landlordLeaseAgreementId = req.query.landlordLeaseAgreementId || req.body.landlordLeaseAgreementId;
+
+  try {
+
+      if (!propertyId || !landlordLeaseAgreementId) {
+          return res.status(400).json({ message: "PropertyID, and landlordLeaseAgreementId are required" });
+      }
+
+
+      const propertyExists = await propertyModel.findById(propertyId);
+      if (!propertyExists) {
+          return res.status(400).json({ message: "Property does not exist" });
+      }
+
+ 
+      const newTenantLeaseAgreement = new TenantLeaseModel({
+          AcceptanceStatus,
+          leaseTerms,
+          Signature,
+          propertyId,
+          landlordLeaseAgreementId,
+      });
+
+      const saveTenantLeaseAgreement = await newTenantLeaseAgreement.save();
+
+    
+      const updatedLandlordLeaseAgreement = await LandlordLeaseModel.findByIdAndUpdate(
+          landlordLeaseAgreementId,
+          { LeaseAcceptanceStatus: saveTenantLeaseAgreement.AcceptanceStatus },
+          { new: true }
+      );
+
+      if (!updatedLandlordLeaseAgreement) {
+          return res.status(400).json({ message: "Landlord Lease ID does not exist" });
+      }
+
+     
+      res.status(201).json({
+          message: "Tenant Lease Agreement created successfully and Landlord acceptance status updated",
+          UpdatedTenantLeaseModel: updatedLandlordLeaseAgreement,
+      });
+  } catch (error) {
+      console.error("Error while creating Tenant Lease Agreement:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+  }
+}
