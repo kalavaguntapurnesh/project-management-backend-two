@@ -563,26 +563,27 @@ exports.getAllActiveProperties = async (req, res) => {
 
 
 
-exports.getLandlordLeaseTerms = async (req,res) => {
 
-    const landlordLeaseAgreementId = req.query.landlordLeaseAgreementId || req.body.landlordLeaseAgreementId; 
-    if(!landlordLeaseAgreementId)
-    {
-        return res.status(400).json({message: "Property ID is required!"})
+exports.getLandlordLeaseDetails = async (req, res) => {
+  const propertyId = req.query.propertyId || req.body.propertyId;
+  if (!propertyId) {
+    return res.status(400).json({ message: "Property ID is required!" });
+  }
+
+  try {
+    // Find the lease agreement based on the propertyId
+    const leaseDetails = await LandlordLeaseModel.findOne({ PropertyId: propertyId }).populate('PropertyId');
+
+    if (leaseDetails) {
+      return res.status(200).json({ data: leaseDetails });
+    } else {
+      return res.status(404).json({ message: "No lease agreement found for this property" });
     }
-
-    try {
-      const landlordLeaseTerms = await LandlordLeaseModel.find({
-        _id: landlordLeaseAgreementId,
-      });
-      return res.status(200).json({ data: landlordLeaseTerms });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ error });
-    }
-
-} 
-
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+};
 
 exports.addTenantLeaseAgreement = async(req,res)=>{
   const { AcceptanceStatus, leaseTerms, Signature } = req.body;

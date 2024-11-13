@@ -15,6 +15,6 @@ router.post("/addProperty", authMiddleware, userController.addProperty);
 router.post("/getProperties", authMiddleware, userController.getProperty);
 router.post("/addLandlordLeaseProperty", userController.addLandlordLeaseProperty);
 router.get("/getAllActiveProperties", userController.getAllActiveProperties);
-router.post("/getLandlordLeaseTerms", userController.getLandlordLeaseTerms)
+router.post("/getLandlordLeaseTerms", userController.getLandlordLeaseDetails)
 router.post("/addTenantLeaseAgreement", userController.addTenantLeaseAgreement)
 module.exports = router;
