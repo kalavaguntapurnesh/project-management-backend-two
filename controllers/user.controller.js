@@ -182,6 +182,8 @@ exports.addProperty = async (req, res) => {
       streetName,
       landMark,
       propertyType,
+      propertyState,
+      propertyStatus,
       selectedCountry,
       selectedState,
       selectedCity,
@@ -194,6 +196,8 @@ exports.addProperty = async (req, res) => {
       streetName,
       landMark,
       propertyType,
+      propertyState,
+      propertyStatus,
       selectedCountry,
       selectedState,
       selectedCity,
@@ -543,7 +547,10 @@ try {
 exports.getAllActiveProperties = async (req, res) => {
   
   try {
-    const activeProperties = await propertyModel.find({}).populate({
+    const activeProperties = await propertyModel.find({
+      "propertyStatus.value": "No", 
+      "propertyState.value": "Vacant", 
+    }).populate({
       path: 'landlordLeaseAgreement', 
       match: { LeaseAcceptanceStatus: null }, 
     });
@@ -571,7 +578,7 @@ exports.getLandlordLeaseDetails = async (req, res) => {
   }
 
   try {
-    // Find the lease agreement based on the propertyId
+ 
     const leaseDetails = await LandlordLeaseModel.findOne({ PropertyId: propertyId }).populate('PropertyId');
 
     if (leaseDetails) {
@@ -585,17 +592,19 @@ exports.getLandlordLeaseDetails = async (req, res) => {
   }
 };
 
+
+
 exports.addTenantLeaseAgreement = async(req,res)=>{
   const { AcceptanceStatus, leaseTerms, Signature } = req.body;
 
   const propertyId = req.query.propertyId || req.body.propertyId;
-  // const tenantId = req.query.tenantId || req.body.tenantId;
+  const tenantId = req.query.tenantId || req.body.tenantId;
   const landlordLeaseAgreementId = req.query.landlordLeaseAgreementId || req.body.landlordLeaseAgreementId;
 
   try {
 
-      if (!propertyId || !landlordLeaseAgreementId) {
-          return res.status(400).json({ message: "PropertyID, and landlordLeaseAgreementId are required" });
+      if (!propertyId || !landlordLeaseAgreementId || !tenantId) {
+          return res.status(400).json({ message: "PropertyID,tenantId and landlordLeaseAgreementId are required" });
       }
 
 
@@ -611,6 +620,7 @@ exports.addTenantLeaseAgreement = async(req,res)=>{
           Signature,
           propertyId,
           landlordLeaseAgreementId,
+          tenantId
       });
 
       const saveTenantLeaseAgreement = await newTenantLeaseAgreement.save();
@@ -636,3 +646,28 @@ exports.addTenantLeaseAgreement = async(req,res)=>{
       res.status(500).json({ message: "Internal Server Error" });
   }
 }
+
+
+// exports.getLandlordDetailsInTenantDashboard = async(req,res)=>{
+
+//   const propertyId = req.query.propertyId || req.body.propertyId;
+
+// try {
+
+//   const landlordDetails = await propertyModel.findById(propertyId).populate({
+//     path: 'userId', 
+//     model: 'userModel', 
+    
+//   });
+
+//   if (!landlordDetails) {
+//     return res.status(404).json({ message: "Property not found" });
+//   }
+
+//   res.status(200).json({ landlordDetails });
+// } catch (error) {
+//   console.error("Error fetching landlord details:", error);
+//   res.status(500).json({ error: "Internal Server Error" });
+// }
+
+// }

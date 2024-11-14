@@ -14,6 +14,12 @@ const propertySchema = new mongoose.Schema(
     propertyType: {
       type: Object,
     },
+    propertyState: {
+      type: Object,
+    },
+    propertyStatus: {
+      type: Object,
+    },
     selectedCountry: {
       type: Object,
     },
