@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema(
     postalCode: {
       type: String,
       default: "",
-    },
+    }
   },
   {
     timestamps: true,

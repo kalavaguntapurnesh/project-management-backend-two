@@ -1,4 +1,4 @@
-const userModel = require("../models/user.model.js");
+const userModel = require('../models/user.model.js');
 const bcrypt = require("bcryptjs");
 const tokenModel = require("../models/token.model.js");
 const propertyModel = require("../models/property.model.js");
@@ -647,27 +647,79 @@ exports.addTenantLeaseAgreement = async(req,res)=>{
   }
 }
 
+exports.getLandlordDetailsInTenantDashboard = async (req, res) => {
+  const propertyId = req.query.propertyId || req.body.propertyId;
 
-// exports.getLandlordDetailsInTenantDashboard = async(req,res)=>{
+  try {
+    const landlordDetails = await propertyModel
+      .findById(propertyId)
+      .populate('userId'); 
 
-//   const propertyId = req.query.propertyId || req.body.propertyId;
+    if (!landlordDetails) {
+      return res.status(404).json({ message: "Property not found" });
+    }
 
-// try {
+    res.status(200).json({ landlordDetails });
+  } catch (error) {
+    console.error("Error fetching landlord details:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
-//   const landlordDetails = await propertyModel.findById(propertyId).populate({
-//     path: 'userId', 
-//     model: 'userModel', 
-    
-//   });
+// exports.updateLandlordDetailsInTenantDashboard = async (req, res) => {
+//   const { propertyId, landlordId } = req.body;
 
-//   if (!landlordDetails) {
-//     return res.status(404).json({ message: "Property not found" });
+//   // Validate required fields
+//   if (!propertyId || !landlordId) {
+//     return res.status(400).json({ message: "propertyId and landlordId are required!" });
 //   }
 
-//   res.status(200).json({ landlordDetails });
-// } catch (error) {
-//   console.error("Error fetching landlord details:", error);
-//   res.status(500).json({ error: "Internal Server Error" });
-// }
+//   try {
+//     // Find and update the property based on propertyId and landlordId, then populate user details
+//     const property = await propertyModel.findOne({
+//       _id: propertyId,
+//       userId: landlordId
+//     }
+//     ).populate('userId'); // Populate userId to get landlord details from userModel
 
-// }
+//     // Check if property with specified landlord is found
+//     if (!property) {
+//       return res.status(404).json({ message: "Landlord details not found" });
+//     }
+
+//     // Respond with populated landlord details
+//     res.status(200).json({
+//       message: "Landlord details retrieved successfully",
+//       landlordDetails: property.userId // userId now contains the populated user details
+//     });
+//   } catch (error) {
+//     console.error("Error updating landlord details:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
+
+
+exports.updateTenantDetailsInLandlordDashboard = async (req, res) => {
+  const { propertyId, tenantId } = req.body;
+  if(!propertyId || !tenantId){
+    res.status(404).json({message: "propertyId and tenantId required!"})
+  }
+
+  try {
+    const tenantLease = await TenantLeaseModel.findOneAndUpdate(
+      { propertyId, tenantId },
+      { AcceptanceStatus: "Accept" },
+      { new: true }
+    ).populate('tenantId');
+
+    if (!tenantLease) {
+      return res.status(404).json({ message: "Lease agreement not found" });
+    }
+
+    res.status(200).json({ message: "Tenant details updated successfully", tenantLease });
+  } catch (error) {
+    console.error("Error updating tenant details:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
