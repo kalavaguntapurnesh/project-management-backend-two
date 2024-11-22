@@ -47,9 +47,9 @@ exports.registerUser = async (req, res) => {
       },
     });
     var mailOptions = {
-      from: "syndrome-noreply@clouddatanetworks.com",
+      from: "noreply-rma@clouddatanetworks.com",
       to: email,
-      subject: "Welcome to Syndèo!!! 🎉 🎉. Thank you for registering with us",
+      subject: "Welcome to Rental Management Application!!! 🎉 🎉. Thank you for registering with us",
       html: `<!DOCTYPE html>
     <html>
       <head>
@@ -721,5 +721,43 @@ exports.updateTenantDetailsInLandlordDashboard = async (req, res) => {
   } catch (error) {
     console.error("Error updating tenant details:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+exports.getLeaseProperty = async (req, res) => {
+  try {
+
+    const { propertyId } = req.body;
+
+    if (!propertyId) {
+      return res.status(400).json({
+        success: false,
+        message: "Property ID is required",
+      });
+    }
+
+    const leaseProperty = await propertyModel.findById(propertyId);
+
+
+    if (!leaseProperty) {
+      return res.status(404).json({
+        success: false,
+        message: "Property not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: leaseProperty,
+    });
+  } catch (error) {
+    console.error("Error fetching property:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching the property",
+      error: error.message,
+    });
   }
 };
