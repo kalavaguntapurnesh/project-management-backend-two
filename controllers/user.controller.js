@@ -761,3 +761,85 @@ exports.getLeaseProperty = async (req, res) => {
     });
   }
 };
+
+// Lease Module data
+
+exports.getLeaseFormData = async (req, res) => {
+  
+  try {
+      
+      const {
+          leaseTerm,
+          rentDetails,
+          options,
+          clauses,
+      } = req.body;
+
+      
+      const processedLeaseTerm = {
+          startDate: new Date(leaseTerm.startDate),
+          endDate: leaseTerm.monthToMonth ? null : new Date(leaseTerm.endDate),
+          customDate: leaseTerm.customDate || false,
+          fullYear: leaseTerm.fullYear || false,
+          monthToMonth: leaseTerm.monthToMonth || false,
+      };
+
+      const processedRentDetails = {
+          rent: Number(rentDetails.rent),
+          rentDueDate: rentDetails.rentDueDate,
+          fees: Number(rentDetails.fees),
+          lateRentFee: Number(rentDetails.lateRentFee),
+          moveInFee: Number(rentDetails.moveInFee),
+          moveOutFee: Number(rentDetails.moveOutFee),
+          parkingFee: Number(rentDetails.parkingFee),
+          securityDeposit: Number(rentDetails.securityDeposit),
+      };
+
+      const processedOptions = {
+          petPolicy: options.petPolicy || false,
+          noPets: options.noPets || false,
+          smokingPolicy: options.smokingPolicy || false,
+          requireRentersInsurance: options.requireRentersInsurance || false,
+          requireOnlinePaymentSetup: options.requireOnlinePaymentSetup || false,
+          petPolicyDetails: {
+              deposit: options.petPolicyDetails.deposit || false,
+              depositAmount: Number(options.petPolicyDetails.depositAmount || 0),
+              fee: options.petPolicyDetails.fee || false,
+              maintenanceLiability: options.petPolicyDetails.maintenanceLiability || false,
+              monthlyCharge: options.petPolicyDetails.monthlyCharge || false,
+              monthlyChargeAmount: Number(options.petPolicyDetails.monthlyChargeAmount || 0),
+              oneTimeFeeAmount: Number(options.petPolicyDetails.oneTimeFeeAmount || 0),
+          },
+      };
+
+      const processedClauses = clauses.map((clause) => ({
+          name: clause.name,
+          text: clause.text,
+          editable: clause.editable || false,
+      }));
+
+      // Prepare the final object for saving
+      const leaseFormData = {
+          leaseTerm: processedLeaseTerm,
+          rentDetails: processedRentDetails,
+          options: processedOptions,
+          clauses: processedClauses,
+      };
+
+    
+      // await LeaseModel.create(leaseFormData);
+
+      res.status(200).json({
+          success: true,
+          message: "Lease form data processed successfully",
+          data: leaseFormData,
+      });
+
+      } catch (error) {
+          res.status(500).json({
+              success: false,
+              message: "Error processing lease form data",
+              error: error.message,
+          });
+      }
+};

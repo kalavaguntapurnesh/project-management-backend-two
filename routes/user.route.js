@@ -20,4 +20,6 @@ router.post("/addTenantLeaseAgreement", userController.addTenantLeaseAgreement)
 router.post("/getLandlordDetailsInTenantDashboard",userController.getLandlordDetailsInTenantDashboard)
 router.post("/updateTenantDetailsInLandlordDashboard",userController.updateTenantDetailsInLandlordDashboard)
 router.post("/getLeaseProperty", userController.getLeaseProperty);
+router.post("/getLeaseFormData", userController.getLeaseFormData);
+
 module.exports = router;
