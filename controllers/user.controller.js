@@ -773,6 +773,11 @@ exports.getLeaseFormData = async (req, res) => {
           rentDetails,
           options,
           clauses,
+          rules,
+          disclosures,
+          lessorInfo,
+          termsAndAgreement,
+
       } = req.body;
 
       
@@ -818,13 +823,61 @@ exports.getLeaseFormData = async (req, res) => {
           editable: clause.editable || false,
       }));
 
+      const processedRules = rules.map((rule)=>({
+        text: rule.text,
+        editable: rule.editable || false,
+      }));
+
+      const processedDisclosures = {
+        bedBug: {
+          issue: disclosures.bedBug?.issue || "",
+          otherDetails: disclosures.bedBug?.otherDetails || "",
+        },
+        habitability: {
+          isAware: disclosures.habitability?.isAware || false,
+          details: disclosures.habitability?.details || "",
+        },
+        leadPaint: {
+          isLead: disclosures.leadPaint?.isLead || false,
+          details: disclosures.leadPaint?.details || "",
+        },
+        mold: {
+          isMold: disclosures.mold?.isMold || false,
+          details: disclosures.mold?.details || "",
+        },
+        utilityDisclosureFile: disclosures.utilityDisclosureFile
+          ? {
+              name: disclosures.utilityDisclosureFile.name,
+              size: disclosures.utilityDisclosureFile.size,
+              type: disclosures.utilityDisclosureFile.type,
+              lastModified: disclosures.utilityDisclosureFile.lastModified,
+            }
+          : null,
+      };
+
+      const processedLessorInfo = {
+        fullName : lessorInfo.fullName,
+        email : lessorInfo.email,
+        phoneNumber : lessorInfo.phoneNumber,
+        companyName : lessorInfo.companyName,
+        companyPhone : lessorInfo.companyPhone,
+        emergencyPhone : lessorInfo.emergencyPhone,
+        lessorAddress : lessorInfo.lessorAddress
+      }
+
       // Prepare the final object for saving
       const leaseFormData = {
           leaseTerm: processedLeaseTerm,
           rentDetails: processedRentDetails,
           options: processedOptions,
           clauses: processedClauses,
+          rules: processedRules,
+          disclosures: processedDisclosures,
+          lessorInfo: processedLessorInfo,
       };
+
+      
+
 
     
       // await LeaseModel.create(leaseFormData);
