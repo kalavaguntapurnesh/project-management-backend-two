@@ -13,13 +13,13 @@ router.post("/resetPassword/:id/:token", userController.resetPassword);
 router.post("/getUserData", authMiddleware, userController.getUserData);
 router.post("/addProperty", authMiddleware, userController.addProperty);
 router.post("/getProperties", authMiddleware, userController.getProperty);
-router.post("/addLandlordLeaseProperty", userController.addLandlordLeaseProperty);
+// router.post("/addLandlordLeaseProperty", userController.addLandlordLeaseProperty);
 router.get("/getAllActiveProperties", userController.getAllActiveProperties);
-router.post("/getLandlordLeaseTerms", userController.getLandlordLeaseDetails)
-router.post("/addTenantLeaseAgreement", userController.addTenantLeaseAgreement)
-router.post("/getLandlordDetailsInTenantDashboard",userController.getLandlordDetailsInTenantDashboard)
+// router.post("/getLandlordLeaseTerms", userController.getLandlordLeaseDetails)
+// router.post("/addTenantLeaseAgreement", userController.addTenantLeaseAgreement)
+// router.post("/getLandlordDetailsInTenantDashboard",userController.getLandlordDetailsInTenantDashboard)
 router.post("/updateTenantDetailsInLandlordDashboard",userController.updateTenantDetailsInLandlordDashboard)
 router.post("/getLeaseProperty", userController.getLeaseProperty);
-router.post("/getLeaseFormData", userController.getLeaseFormData);
+router.post("/addingLeaseFormData", userController.addingLeaseFormData);
 
 module.exports = router;

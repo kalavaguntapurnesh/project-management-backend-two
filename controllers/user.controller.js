@@ -10,6 +10,7 @@ const { log } = require("console");
 const nodemailer = require("nodemailer");
 const ApiError = require("../utils/ApiError.js");
 const sendMail = require("../helpers/sendMail.js");
+const landlordLeaseAgreement = require('../models/landlordLeaseAgreement.js');
 
 exports.registerUser = async (req, res) => {
   try {
@@ -494,54 +495,54 @@ exports.resetPassword = async (req, res) => {
 };
 
 
-exports.addLandlordLeaseProperty = async(req,res)=>{
-  const {
-    RentAmount,
-    SecurityDeposit,
-    LeaseDuration,
-    StartDate,
-    EndDate,
-    LeaseTermsAndDescription,
-    Status,
-    Late_Fee_Policy,
-    Rent_Increase_policy,
-    Renewel_Option
-} = req.body;
+// exports.addLandlordLeaseProperty = async(req,res)=>{
+//   const {
+//     RentAmount,
+//     SecurityDeposit,
+//     LeaseDuration,
+//     StartDate,
+//     EndDate,
+//     LeaseTermsAndDescription,
+//     Status,
+//     Late_Fee_Policy,
+//     Rent_Increase_policy,
+//     Renewel_Option
+// } = req.body;
 
-const propertyId = req.query.propertyId || req.body.propertyId;
+// const propertyId = req.query.propertyId || req.body.propertyId;
 
-try {
+// try {
     
-    if (!propertyId) {
-        return res.status(400).json({ message: "PropertyID  are required" });
-    }
+//     if (!propertyId) {
+//         return res.status(400).json({ message: "PropertyID  are required" });
+//     }
 
-    const propertyExists = await propertyModel.findById(propertyId);
-    if (!propertyExists) {
-        return res.status(400).json({ message: "Property does not exist" });
-    }
-    const newLandlordLeaseAgreement = new LandlordLeaseModel({
-        PropertyId: propertyId,
-        RentAmount,
-        SecurityDeposit,
-        LeaseDuration,
-        StartDate,
-        EndDate,
-        LeaseTermsAndDescription,
-        Status,
-        Late_Fee_Policy,
-        Rent_Increase_policy,
-        Renewel_Option
-    });
+//     const propertyExists = await propertyModel.findById(propertyId);
+//     if (!propertyExists) {
+//         return res.status(400).json({ message: "Property does not exist" });
+//     }
+//     const newLandlordLeaseAgreement = new LandlordLeaseModel({
+//         PropertyId: propertyId,
+//         RentAmount,
+//         SecurityDeposit,
+//         LeaseDuration,
+//         StartDate,
+//         EndDate,
+//         LeaseTermsAndDescription,
+//         Status,
+//         Late_Fee_Policy,
+//         Rent_Increase_policy,
+//         Renewel_Option
+//     });
 
-    await newLandlordLeaseAgreement.save();
+//     await newLandlordLeaseAgreement.save();
 
-    res.status(201).json({ message: "Landlord Lease Agreement created successfully", LandlordLeaseAgreement: newLandlordLeaseAgreement });
-} catch (error) {
-    console.error("Error while creating Landlord Lease Agreement:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-}
-}
+//     res.status(201).json({ message: "Landlord Lease Agreement created successfully", LandlordLeaseAgreement: newLandlordLeaseAgreement });
+// } catch (error) {
+//     console.error("Error while creating Landlord Lease Agreement:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+// }
+// }
 
 
 exports.getAllActiveProperties = async (req, res) => {
@@ -571,81 +572,81 @@ exports.getAllActiveProperties = async (req, res) => {
 
 
 
-exports.getLandlordLeaseDetails = async (req, res) => {
-  const propertyId = req.query.propertyId || req.body.propertyId;
-  if (!propertyId) {
-    return res.status(400).json({ message: "Property ID is required!" });
-  }
+// exports.getLandlordLeaseDetails = async (req, res) => {
+//   const propertyId = req.query.propertyId || req.body.propertyId;
+//   if (!propertyId) {
+//     return res.status(400).json({ message: "Property ID is required!" });
+//   }
 
-  try {
+//   try {
  
-    const leaseDetails = await LandlordLeaseModel.findOne({ PropertyId: propertyId }).populate('PropertyId');
+//     const leaseDetails = await LandlordLeaseModel.findOne({ PropertyId: propertyId }).populate('PropertyId');
 
-    if (leaseDetails) {
-      return res.status(200).json({ data: leaseDetails });
-    } else {
-      return res.status(404).json({ message: "No lease agreement found for this property" });
-    }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-};
-
-
-
-exports.addTenantLeaseAgreement = async(req,res)=>{
-  const { AcceptanceStatus, leaseTerms, Signature } = req.body;
-
-  const propertyId = req.query.propertyId || req.body.propertyId;
-  const tenantId = req.query.tenantId || req.body.tenantId;
-  const landlordLeaseAgreementId = req.query.landlordLeaseAgreementId || req.body.landlordLeaseAgreementId;
-
-  try {
-
-      if (!propertyId || !landlordLeaseAgreementId || !tenantId) {
-          return res.status(400).json({ message: "PropertyID,tenantId and landlordLeaseAgreementId are required" });
-      }
+//     if (leaseDetails) {
+//       return res.status(200).json({ data: leaseDetails });
+//     } else {
+//       return res.status(404).json({ message: "No lease agreement found for this property" });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ error: "Something went wrong" });
+//   }
+// };
 
 
-      const propertyExists = await propertyModel.findById(propertyId);
-      if (!propertyExists) {
-          return res.status(400).json({ message: "Property does not exist" });
-      }
+
+// exports.addTenantLeaseAgreement = async(req,res)=>{
+//   const { AcceptanceStatus, leaseTerms, Signature } = req.body;
+
+//   const propertyId = req.query.propertyId || req.body.propertyId;
+//   const tenantId = req.query.tenantId || req.body.tenantId;
+//   const landlordLeaseAgreementId = req.query.landlordLeaseAgreementId || req.body.landlordLeaseAgreementId;
+
+//   try {
+
+//       if (!propertyId || !landlordLeaseAgreementId || !tenantId) {
+//           return res.status(400).json({ message: "PropertyID,tenantId and landlordLeaseAgreementId are required" });
+//       }
+
+
+//       const propertyExists = await propertyModel.findById(propertyId);
+//       if (!propertyExists) {
+//           return res.status(400).json({ message: "Property does not exist" });
+//       }
 
  
-      const newTenantLeaseAgreement = new TenantLeaseModel({
-          AcceptanceStatus,
-          leaseTerms,
-          Signature,
-          propertyId,
-          landlordLeaseAgreementId,
-          tenantId
-      });
+//       const newTenantLeaseAgreement = new TenantLeaseModel({
+//           AcceptanceStatus,
+//           leaseTerms,
+//           Signature,
+//           propertyId,
+//           landlordLeaseAgreementId,
+//           tenantId
+//       });
 
-      const saveTenantLeaseAgreement = await newTenantLeaseAgreement.save();
+//       const saveTenantLeaseAgreement = await newTenantLeaseAgreement.save();
 
     
-      const updatedLandlordLeaseAgreement = await LandlordLeaseModel.findByIdAndUpdate(
-          landlordLeaseAgreementId,
-          { LeaseAcceptanceStatus: saveTenantLeaseAgreement.AcceptanceStatus },
-          { new: true }
-      );
+//       const updatedLandlordLeaseAgreement = await LandlordLeaseModel.findByIdAndUpdate(
+//           landlordLeaseAgreementId,
+//           { LeaseAcceptanceStatus: saveTenantLeaseAgreement.AcceptanceStatus },
+//           { new: true }
+//       );
 
-      if (!updatedLandlordLeaseAgreement) {
-          return res.status(400).json({ message: "Landlord Lease ID does not exist" });
-      }
+//       if (!updatedLandlordLeaseAgreement) {
+//           return res.status(400).json({ message: "Landlord Lease ID does not exist" });
+//       }
 
      
-      res.status(201).json({
-          message: "Tenant Lease Agreement created successfully and Landlord acceptance status updated",
-          UpdatedTenantLeaseModel: updatedLandlordLeaseAgreement,
-      });
-  } catch (error) {
-      console.error("Error while creating Tenant Lease Agreement:", error);
-      res.status(500).json({ message: "Internal Server Error" });
-  }
-}
+//       res.status(201).json({
+//           message: "Tenant Lease Agreement created successfully and Landlord acceptance status updated",
+//           UpdatedTenantLeaseModel: updatedLandlordLeaseAgreement,
+//       });
+//   } catch (error) {
+//       console.error("Error while creating Tenant Lease Agreement:", error);
+//       res.status(500).json({ message: "Internal Server Error" });
+//   }
+// }
 
 exports.getLandlordDetailsInTenantDashboard = async (req, res) => {
   const propertyId = req.query.propertyId || req.body.propertyId;
@@ -762,12 +763,21 @@ exports.getLeaseProperty = async (req, res) => {
   }
 };
 
-// Lease Module data
+// adding lease form data
 
-exports.getLeaseFormData = async (req, res) => {
-  
+exports.addingLeaseFormData = async (req, res) => {
+
+  const propertyId = req.query.propertyId || req.body.propertyId;
+  if (!propertyId) {
+      return res.status(400).json({ message: "PropertyID is required" });
+  }
+
+  const propertyExists = await propertyModel.findById(propertyId);
+  if (!propertyExists) {
+      return res.status(400).json({ message: "Property does not exist" });
+  }
+
   try {
-      
       const {
           leaseTerm,
           rentDetails,
@@ -777,122 +787,85 @@ exports.getLeaseFormData = async (req, res) => {
           disclosures,
           lessorInfo,
           termsAndAgreement,
-
       } = req.body;
 
-      
-      const processedLeaseTerm = {
-          startDate: new Date(leaseTerm.startDate),
-          endDate: leaseTerm.monthToMonth ? null : new Date(leaseTerm.endDate),
-          customDate: leaseTerm.customDate || false,
-          fullYear: leaseTerm.fullYear || false,
-          monthToMonth: leaseTerm.monthToMonth || false,
-      };
-
-      const processedRentDetails = {
-          rent: Number(rentDetails.rent),
-          rentDueDate: rentDetails.rentDueDate,
-          fees: Number(rentDetails.fees),
-          lateRentFee: Number(rentDetails.lateRentFee),
-          moveInFee: Number(rentDetails.moveInFee),
-          moveOutFee: Number(rentDetails.moveOutFee),
-          parkingFee: Number(rentDetails.parkingFee),
-          securityDeposit: Number(rentDetails.securityDeposit),
-      };
-
-      const processedOptions = {
-          petPolicy: options.petPolicy || false,
-          noPets: options.noPets || false,
-          smokingPolicy: options.smokingPolicy || false,
-          requireRentersInsurance: options.requireRentersInsurance || false,
-          requireOnlinePaymentSetup: options.requireOnlinePaymentSetup || false,
-          petPolicyDetails: {
-              deposit: options.petPolicyDetails.deposit || false,
-              depositAmount: Number(options.petPolicyDetails.depositAmount || 0),
-              fee: options.petPolicyDetails.fee || false,
-              maintenanceLiability: options.petPolicyDetails.maintenanceLiability || false,
-              monthlyCharge: options.petPolicyDetails.monthlyCharge || false,
-              monthlyChargeAmount: Number(options.petPolicyDetails.monthlyChargeAmount || 0),
-              oneTimeFeeAmount: Number(options.petPolicyDetails.oneTimeFeeAmount || 0),
+      const leaseFormData = {
+          PropertyId: propertyId,
+          leaseTerm: {
+              startDate: new Date(leaseTerm.startDate),
+              endDate: leaseTerm.monthToMonth ? null : new Date(leaseTerm.endDate),
+              customDate: leaseTerm.customDate || false,
+              fullYear: leaseTerm.fullYear || false,
+              monthToMonth: leaseTerm.monthToMonth || false,
+          },
+          rentDetails: {
+              rent: Number(rentDetails.rent),
+              rentDueDate: rentDetails.rentDueDate,
+              fees: Number(rentDetails.fees),
+              lateRentFee: Number(rentDetails.lateRentFee),
+              moveInFee: Number(rentDetails.moveInFee),
+              moveOutFee: Number(rentDetails.moveOutFee),
+              parkingFee: Number(rentDetails.parkingFee),
+              securityDeposit: Number(rentDetails.securityDeposit),
+          },
+          options: {
+              baseOptions: {
+                  petPolicy: options.petPolicy || false,
+                  noPets: options.noPets || false,
+                  smokingPolicy: options.smokingPolicy || false,
+                  requireRentersInsurance: options.requireRentersInsurance || false,
+                  requireOnlinePaymentSetup: options.requireOnlinePaymentSetup || false,
+              },
+              petPolicyDetails: options.petPolicyDetails || {},
+              proratedRent: {
+                amount: options.proratedRent?.amount || "0", // Default to "0"
+                date: options.proratedRent?.date ? new Date(options.proratedRent.date) : null // Parse date if available, default to null
+              }
+          },
+          clauses: clauses.map((clause) => ({
+              name: clause.name,
+              text: clause.text,
+              editable: clause.editable || false,
+          })),
+          rules: rules.map((rule) => ({
+              text: rule.text,
+              editable: rule.editable || false,
+          })),
+          disclosures: {
+              bedBug: disclosures.bedBug || {},
+              habitability: disclosures.habitability || {},
+              leadPaint: disclosures.leadPaint || {},
+              mold: disclosures.mold || {},
+              utilityDisclosureFile: disclosures.utilityDisclosureFile || null,
+          },
+          lessorInfo: {
+              fullName: lessorInfo.fullName,
+              email: lessorInfo.email,
+              phoneNumber: lessorInfo.phoneNumber,
+              companyName: lessorInfo.companyName,
+              companyPhone: lessorInfo.companyPhone,
+              emergencyPhone: lessorInfo.emergencyPhone,
+              lessorAddress: lessorInfo.lessorAddress,
+          },
+          termsAndAgreement: {
+              content: termsAndAgreement.content,
           },
       };
 
-      const processedClauses = clauses.map((clause) => ({
-          name: clause.name,
-          text: clause.text,
-          editable: clause.editable || false,
-      }));
-
-      const processedRules = rules.map((rule)=>({
-        text: rule.text,
-        editable: rule.editable || false,
-      }));
-
-      const processedDisclosures = {
-        bedBug: {
-          issue: disclosures.bedBug?.issue || "",
-          otherDetails: disclosures.bedBug?.otherDetails || "",
-        },
-        habitability: {
-          isAware: disclosures.habitability?.isAware || false,
-          details: disclosures.habitability?.details || "",
-        },
-        leadPaint: {
-          isLead: disclosures.leadPaint?.isLead || false,
-          details: disclosures.leadPaint?.details || "",
-        },
-        mold: {
-          isMold: disclosures.mold?.isMold || false,
-          details: disclosures.mold?.details || "",
-        },
-        utilityDisclosureFile: disclosures.utilityDisclosureFile
-          ? {
-              name: disclosures.utilityDisclosureFile.name,
-              size: disclosures.utilityDisclosureFile.size,
-              type: disclosures.utilityDisclosureFile.type,
-              lastModified: disclosures.utilityDisclosureFile.lastModified,
-            }
-          : null,
-      };
-
-      const processedLessorInfo = {
-        fullName : lessorInfo.fullName,
-        email : lessorInfo.email,
-        phoneNumber : lessorInfo.phoneNumber,
-        companyName : lessorInfo.companyName,
-        companyPhone : lessorInfo.companyPhone,
-        emergencyPhone : lessorInfo.emergencyPhone,
-        lessorAddress : lessorInfo.lessorAddress
-      }
-
-      // Prepare the final object for saving
-      const leaseFormData = {
-          leaseTerm: processedLeaseTerm,
-          rentDetails: processedRentDetails,
-          options: processedOptions,
-          clauses: processedClauses,
-          rules: processedRules,
-          disclosures: processedDisclosures,
-          lessorInfo: processedLessorInfo,
-      };
-
-      
-
-
-    
-      // await LeaseModel.create(leaseFormData);
+      const newLease = await landlordLeaseAgreement.create(leaseFormData);
 
       res.status(200).json({
           success: true,
           message: "Lease form data processed successfully",
-          data: leaseFormData,
+          leaseId: newLease._id,
+          data: newLease,
       });
-
-      } catch (error) {
-          res.status(500).json({
-              success: false,
-              message: "Error processing lease form data",
-              error: error.message,
-          });
-      }
+  } catch (error) {
+    console.log(error);
+      res.status(500).json({
+          success: false,
+          message: "Error processing lease form data",
+          error: error.message,
+      });
+  }
 };
