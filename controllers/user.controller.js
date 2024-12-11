@@ -572,81 +572,81 @@ exports.getAllActiveProperties = async (req, res) => {
 
 
 
-// exports.getLandlordLeaseDetails = async (req, res) => {
-//   const propertyId = req.query.propertyId || req.body.propertyId;
-//   if (!propertyId) {
-//     return res.status(400).json({ message: "Property ID is required!" });
-//   }
+exports.getLandlordLeaseDetails = async (req, res) => {
+  const propertyId = req.query.propertyId || req.body.propertyId;
+  if (!propertyId) {
+    return res.status(400).json({ message: "Property ID is required!" });
+  }
 
-//   try {
+  try {
  
-//     const leaseDetails = await LandlordLeaseModel.findOne({ PropertyId: propertyId }).populate('PropertyId');
+    const leaseDetails = await LandlordLeaseModel.findOne({ PropertyId: propertyId }).populate('PropertyId');
 
-//     if (leaseDetails) {
-//       return res.status(200).json({ data: leaseDetails });
-//     } else {
-//       return res.status(404).json({ message: "No lease agreement found for this property" });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ error: "Something went wrong" });
-//   }
-// };
-
-
-
-// exports.addTenantLeaseAgreement = async(req,res)=>{
-//   const { AcceptanceStatus, leaseTerms, Signature } = req.body;
-
-//   const propertyId = req.query.propertyId || req.body.propertyId;
-//   const tenantId = req.query.tenantId || req.body.tenantId;
-//   const landlordLeaseAgreementId = req.query.landlordLeaseAgreementId || req.body.landlordLeaseAgreementId;
-
-//   try {
-
-//       if (!propertyId || !landlordLeaseAgreementId || !tenantId) {
-//           return res.status(400).json({ message: "PropertyID,tenantId and landlordLeaseAgreementId are required" });
-//       }
+    if (leaseDetails) {
+      return res.status(200).json({ data: leaseDetails });
+    } else {
+      return res.status(404).json({ message: "No lease agreement found for this property" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+};
 
 
-//       const propertyExists = await propertyModel.findById(propertyId);
-//       if (!propertyExists) {
-//           return res.status(400).json({ message: "Property does not exist" });
-//       }
+
+exports.addTenantLeaseAgreement = async(req,res)=>{
+  const { AcceptanceStatus, leaseTerms, Signature } = req.body;
+
+  const propertyId = req.query.propertyId || req.body.propertyId;
+  const tenantId = req.query.tenantId || req.body.tenantId;
+  const landlordLeaseAgreementId = req.query.landlordLeaseAgreementId || req.body.landlordLeaseAgreementId;
+
+  try {
+
+      if (!propertyId || !landlordLeaseAgreementId || !tenantId) {
+          return res.status(400).json({ message: "PropertyID,tenantId and landlordLeaseAgreementId are required" });
+      }
+
+
+      const propertyExists = await propertyModel.findById(propertyId);
+      if (!propertyExists) {
+          return res.status(400).json({ message: "Property does not exist" });
+      }
 
  
-//       const newTenantLeaseAgreement = new TenantLeaseModel({
-//           AcceptanceStatus,
-//           leaseTerms,
-//           Signature,
-//           propertyId,
-//           landlordLeaseAgreementId,
-//           tenantId
-//       });
+      const newTenantLeaseAgreement = new TenantLeaseModel({
+          AcceptanceStatus,
+          leaseTerms,
+          Signature,
+          propertyId,
+          landlordLeaseAgreementId,
+          tenantId
+      });
 
-//       const saveTenantLeaseAgreement = await newTenantLeaseAgreement.save();
+      const saveTenantLeaseAgreement = await newTenantLeaseAgreement.save();
 
     
-//       const updatedLandlordLeaseAgreement = await LandlordLeaseModel.findByIdAndUpdate(
-//           landlordLeaseAgreementId,
-//           { LeaseAcceptanceStatus: saveTenantLeaseAgreement.AcceptanceStatus },
-//           { new: true }
-//       );
+      const updatedLandlordLeaseAgreement = await LandlordLeaseModel.findByIdAndUpdate(
+          landlordLeaseAgreementId,
+          { LeaseAcceptanceStatus: saveTenantLeaseAgreement.AcceptanceStatus },
+          { new: true }
+      );
 
-//       if (!updatedLandlordLeaseAgreement) {
-//           return res.status(400).json({ message: "Landlord Lease ID does not exist" });
-//       }
+      if (!updatedLandlordLeaseAgreement) {
+          return res.status(400).json({ message: "Landlord Lease ID does not exist" });
+      }
 
      
-//       res.status(201).json({
-//           message: "Tenant Lease Agreement created successfully and Landlord acceptance status updated",
-//           UpdatedTenantLeaseModel: updatedLandlordLeaseAgreement,
-//       });
-//   } catch (error) {
-//       console.error("Error while creating Tenant Lease Agreement:", error);
-//       res.status(500).json({ message: "Internal Server Error" });
-//   }
-// }
+      res.status(201).json({
+          message: "Tenant Lease Agreement created successfully and Landlord acceptance status updated",
+          UpdatedTenantLeaseModel: updatedLandlordLeaseAgreement,
+      });
+  } catch (error) {
+      console.error("Error while creating Tenant Lease Agreement:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+  }
+}
 
 exports.getLandlordDetailsInTenantDashboard = async (req, res) => {
   const propertyId = req.query.propertyId || req.body.propertyId;
@@ -667,37 +667,37 @@ exports.getLandlordDetailsInTenantDashboard = async (req, res) => {
   }
 };
 
-// exports.updateLandlordDetailsInTenantDashboard = async (req, res) => {
-//   const { propertyId, landlordId } = req.body;
+exports.updateLandlordDetailsInTenantDashboard = async (req, res) => {
+  const { propertyId, landlordId } = req.body;
 
-//   // Validate required fields
-//   if (!propertyId || !landlordId) {
-//     return res.status(400).json({ message: "propertyId and landlordId are required!" });
-//   }
+  // Validate required fields
+  if (!propertyId || !landlordId) {
+    return res.status(400).json({ message: "propertyId and landlordId are required!" });
+  }
 
-//   try {
-//     // Find and update the property based on propertyId and landlordId, then populate user details
-//     const property = await propertyModel.findOne({
-//       _id: propertyId,
-//       userId: landlordId
-//     }
-//     ).populate('userId'); // Populate userId to get landlord details from userModel
+  try {
+    // Find and update the property based on propertyId and landlordId, then populate user details
+    const property = await propertyModel.findOne({
+      _id: propertyId,
+      userId: landlordId
+    }
+    ).populate('userId'); // Populate userId to get landlord details from userModel
 
-//     // Check if property with specified landlord is found
-//     if (!property) {
-//       return res.status(404).json({ message: "Landlord details not found" });
-//     }
+    // Check if property with specified landlord is found
+    if (!property) {
+      return res.status(404).json({ message: "Landlord details not found" });
+    }
 
-//     // Respond with populated landlord details
-//     res.status(200).json({
-//       message: "Landlord details retrieved successfully",
-//       landlordDetails: property.userId // userId now contains the populated user details
-//     });
-//   } catch (error) {
-//     console.error("Error updating landlord details:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
+    // Respond with populated landlord details
+    res.status(200).json({
+      message: "Landlord details retrieved successfully",
+      landlordDetails: property.userId // userId now contains the populated user details
+    });
+  } catch (error) {
+    console.error("Error updating landlord details:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 
 
@@ -763,109 +763,304 @@ exports.getLeaseProperty = async (req, res) => {
   }
 };
 
+
+
 // adding lease form data
 
+const express = require("express");
+const docusign = require("docusign-esign");
+const fs = require("fs");
+const path = require("path");
+
 exports.addingLeaseFormData = async (req, res) => {
-
-  const propertyId = req.query.propertyId || req.body.propertyId;
-  if (!propertyId) {
-      return res.status(400).json({ message: "PropertyID is required" });
-  }
-
-  const propertyExists = await propertyModel.findById(propertyId);
-  if (!propertyExists) {
-      return res.status(400).json({ message: "Property does not exist" });
-  }
-
+  
   try {
-      const {
-          leaseTerm,
-          rentDetails,
-          options,
-          clauses,
-          rules,
-          disclosures,
-          lessorInfo,
-          termsAndAgreement,
-      } = req.body;
+    const { leaseTerm, rentDetails, options, clauses, rules, disclosures, lessorInfo, termsAndAgreement } = req.body;
 
-      const leaseFormData = {
-          PropertyId: propertyId,
-          leaseTerm: {
-              startDate: new Date(leaseTerm.startDate),
-              endDate: leaseTerm.monthToMonth ? null : new Date(leaseTerm.endDate),
-              customDate: leaseTerm.customDate || false,
-              fullYear: leaseTerm.fullYear || false,
-              monthToMonth: leaseTerm.monthToMonth || false,
-          },
-          rentDetails: {
-              rent: Number(rentDetails.rent),
-              rentDueDate: rentDetails.rentDueDate,
-              fees: Number(rentDetails.fees),
-              lateRentFee: Number(rentDetails.lateRentFee),
-              moveInFee: Number(rentDetails.moveInFee),
-              moveOutFee: Number(rentDetails.moveOutFee),
-              parkingFee: Number(rentDetails.parkingFee),
-              securityDeposit: Number(rentDetails.securityDeposit),
-          },
-          options: {
-              baseOptions: {
-                  petPolicy: options.petPolicy || false,
-                  noPets: options.noPets || false,
-                  smokingPolicy: options.smokingPolicy || false,
-                  requireRentersInsurance: options.requireRentersInsurance || false,
-                  requireOnlinePaymentSetup: options.requireOnlinePaymentSetup || false,
-              },
-              petPolicyDetails: options.petPolicyDetails || {},
-              proratedRent: {
-                amount: options.proratedRent?.amount || "0", // Default to "0"
-                date: options.proratedRent?.date ? new Date(options.proratedRent.date) : null // Parse date if available, default to null
-              }
-          },
-          clauses: clauses.map((clause) => ({
-              name: clause.name,
-              text: clause.text,
-              editable: clause.editable || false,
-          })),
-          rules: rules.map((rule) => ({
-              text: rule.text,
-              editable: rule.editable || false,
-          })),
-          disclosures: {
-              bedBug: disclosures.bedBug || {},
-              habitability: disclosures.habitability || {},
-              leadPaint: disclosures.leadPaint || {},
-              mold: disclosures.mold || {},
-              utilityDisclosureFile: disclosures.utilityDisclosureFile || null,
-          },
-          lessorInfo: {
-              fullName: lessorInfo.fullName,
-              email: lessorInfo.email,
-              phoneNumber: lessorInfo.phoneNumber,
-              companyName: lessorInfo.companyName,
-              companyPhone: lessorInfo.companyPhone,
-              emergencyPhone: lessorInfo.emergencyPhone,
-              lessorAddress: lessorInfo.lessorAddress,
-          },
-          termsAndAgreement: {
-              content: termsAndAgreement.content,
-          },
-      };
+    const propertyId = req.query.propertyId || req.body.propertyId;
 
-      const newLease = await landlordLeaseAgreement.create(leaseFormData);
+    // Validate propertyId
+    if (!propertyId) {
+      return res.status(400).json({ success: false, message: "Property ID is required" });
+    }
 
-      res.status(200).json({
-          success: true,
-          message: "Lease form data processed successfully",
-          leaseId: newLease._id,
-          data: newLease,
-      });
+    const propertyExists = await propertyModel.findById(propertyId);
+    if (!propertyExists) {
+      return res.status(400).json({ success: false, message: "Property does not exist" });
+    }
+
+    // Validate required fields
+    if (!leaseTerm || !rentDetails || !lessorInfo || !termsAndAgreement) {
+      return res.status(400).json({ success: false, message: "Required fields are missing" });
+    }
+
+    // Construct lease data
+    const leaseFormData = {
+      PropertyId: propertyId,
+      leaseTerm: {
+        startDate: new Date(leaseTerm.startDate),
+        endDate: leaseTerm.monthToMonth ? null : new Date(leaseTerm.endDate),
+        customDate: leaseTerm.customDate || false,
+        fullYear: leaseTerm.fullYear || false,
+        monthToMonth: leaseTerm.monthToMonth || false,
+      },
+      rentDetails: {
+        rent: Number(rentDetails.rent),
+        rentDueDate: rentDetails.rentDueDate,
+        fees: Number(rentDetails.fees),
+        lateRentFee: Number(rentDetails.lateRentFee),
+        moveInFee: Number(rentDetails.moveInFee),
+        moveOutFee: Number(rentDetails.moveOutFee),
+        parkingFee: Number(rentDetails.parkingFee),
+        securityDeposit: Number(rentDetails.securityDeposit),
+      },
+      options: {
+        baseOptions: {
+          petPolicy: options?.petPolicy || false,
+          noPets: options?.noPets || false,
+          smokingPolicy: options?.smokingPolicy || false,
+          requireRentersInsurance: options?.requireRentersInsurance || false,
+          requireOnlinePaymentSetup: options?.requireOnlinePaymentSetup || false,
+        },
+        petPolicyDetails: options?.petPolicyDetails || {},
+        proratedRent: {
+          amount: options?.proratedRent?.amount || "0",
+          date: options?.proratedRent?.date ? new Date(options.proratedRent.date) : null,
+        },
+      },
+      clauses: clauses?.map((clause) => ({
+        name: clause.name,
+        text: clause.text,
+        editable: clause.editable || false,
+      })) || [],
+      rules: rules?.map((rule) => ({
+        text: rule.text,
+        editable: rule.editable || false,
+      })) || [],
+      disclosures: {
+        bedBug: disclosures?.bedBug || {},
+        habitability: disclosures?.habitability || {},
+        leadPaint: disclosures?.leadPaint || {},
+        mold: disclosures?.mold || {},
+        utilityDisclosureFile: disclosures?.utilityDisclosureFile || null,
+      },
+      lessorInfo: {
+        fullName: lessorInfo.fullName,
+        email: lessorInfo.email,
+        phoneNumber: lessorInfo.phoneNumber,
+        companyName: lessorInfo.companyName,
+        companyPhone: lessorInfo.companyPhone,
+        emergencyPhone: lessorInfo.emergencyPhone,
+        lessorAddress: lessorInfo.lessorAddress,
+      },
+      termsAndAgreement: {
+        content: termsAndAgreement.content,
+      },
+    };
+
+    // Save lease data to DB
+    const newLease = await landlordLeaseAgreement.create(leaseFormData);
+
+    // Initiate DocuSign process
+    const envelopeId = await createLeaseEnvelope(leaseFormData);
+
+    res.status(200).json({
+      success: true,
+      message: "Lease form data processed successfully",
+      leaseId: newLease._id,
+      envelopeId,
+    });
   } catch (error) {
-    console.log(error);
-      res.status(500).json({
-          success: false,
-          message: "Error processing lease form data",
-          error: error.message,
-      });
+    console.error("Error processing lease form data:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error", error: error.message });
   }
 };
+
+// Function to create DocuSign envelope
+
+
+async function createLeaseEnvelope(leaseFormData) {
+  const dsApiClient = new docusign.ApiClient();
+  dsApiClient.setBasePath(process.env.BASE_PATH);
+
+  const accessToken = await getAccessToken();
+  dsApiClient.addDefaultHeader("Authorization", `Bearer ${accessToken}`);
+
+  const envelopesApi = new docusign.EnvelopesApi(dsApiClient);
+
+  const envelopeDefinition = new docusign.EnvelopeDefinition();
+  envelopeDefinition.emailSubject = "Action required for the lease agreement";
+
+  // Use the DocuSign template
+  envelopeDefinition.templateId = process.env.TEMPLATE_ID;
+
+  // Template roles: Assign data to placeholders
+
+  envelopeDefinition.templateRoles = [
+    {
+      email: leaseFormData.lessorInfo.email,
+      name: leaseFormData.lessorInfo.fullName,
+      roleName: "Lessor", // Ensure this matches the role in your template
+      tabs: {
+        textTabs: [
+          // Lease Term Details
+          { tabLabel: "StartDate", value: leaseFormData.leaseTerm.startDate.toISOString().split("T")[0] },
+          { tabLabel: "EndDate", value: leaseFormData.leaseTerm.endDate ? leaseFormData.leaseTerm.endDate.toISOString().split("T")[0] : "Month-to-Month" },
+      
+          // Rent Details
+          { tabLabel: "RentPrice", value: String(leaseFormData.rentDetails.rent) },
+          { tabLabel: "RentDueDate", value: leaseFormData.rentDetails.rentDueDate },
+          { tabLabel: "LateRentFee", value: String(leaseFormData.rentDetails.lateRentFee) },
+          { tabLabel: "SecurityDeposit", value: String(leaseFormData.rentDetails.securityDeposit) },
+          { tabLabel: "ParkingFee", value: String(leaseFormData.rentDetails.parkingFee) },
+          { tabLabel: "MoveInFee", value: String(leaseFormData.rentDetails.moveInFee) },
+          { tabLabel: "MoveOutFee", value: String(leaseFormData.rentDetails.moveOutFee) },
+      
+          // Options
+          { tabLabel: "PetPolicy", value: leaseFormData.options.baseOptions.petPolicy ? "Yes" : "No" },
+          { tabLabel: "SmokingPolicy", value: leaseFormData.options.baseOptions.smokingPolicy ? "Yes" : "No" },
+          { tabLabel: "RentersInsuranceRequired", value: leaseFormData.options.baseOptions.requireRentersInsurance ? "Yes" : "No" },
+          { tabLabel: "OnlinePaymentRequired", value: leaseFormData.options.baseOptions.requireOnlinePaymentSetup ? "Yes" : "No" },
+          { tabLabel: "ProratedRentAmount", value: String(leaseFormData.options.proratedRent.amount) },
+          { tabLabel: "ProratedRentDate", value: leaseFormData.options.proratedRent.date ? leaseFormData.options.proratedRent.date.toISOString().split("T")[0] : "" },
+      
+          // Clauses and Rules
+          { tabLabel: "Clauses", value: leaseFormData.clauses.map((clause) => clause.name).join(", ") },
+          { tabLabel: "Rules", value: leaseFormData.rules.map((rule) => rule.text).join("; ") },
+      
+          // Disclosures
+          { tabLabel: "HabitabilityDisclosure", value: leaseFormData.disclosures.habitability.details || "false" },
+          { tabLabel: "LeadPaintDisclosure", value: leaseFormData.disclosures.leadPaint.details || "false" },
+          { tabLabel: "MoldDisclosure", value: leaseFormData.disclosures.mold.details || "false" },
+          { tabLabel: "BedBugDisclosure", value: leaseFormData.disclosures.bedBug.details || "false" },
+      
+          // Lessor Information
+          { tabLabel: "LessorName", value: leaseFormData.lessorInfo.fullName },
+          { tabLabel: "LessorEmail", value: leaseFormData.lessorInfo.email },
+          { tabLabel: "LessorPhone", value: leaseFormData.lessorInfo.phoneNumber },
+          { tabLabel: "CompanyName", value: leaseFormData.lessorInfo.companyName },
+          { tabLabel: "CompanyPhone", value: leaseFormData.lessorInfo.companyPhone },
+          { tabLabel: "EmergencyPhone", value: leaseFormData.lessorInfo.emergencyPhone },
+          { tabLabel: "LessorAddress", value: leaseFormData.lessorInfo.lessorAddress },
+      
+          // Terms and Agreements
+          { tabLabel: "TermsAndAgreement", value: leaseFormData.termsAndAgreement.content },
+        ],
+      },
+    },
+  ];
+
+  envelopeDefinition.status = "sent";
+
+  // Create the envelope using the template
+  const results = await envelopesApi.createEnvelope(process.env.ACCOUNT_ID, {
+    envelopeDefinition,
+  });
+
+  return results.envelopeId;
+}
+
+
+
+// Function to retrieve access token
+async function getAccessToken() {
+  const dsApiClient = new docusign.ApiClient();
+  dsApiClient.setBasePath(process.env.BASE_PATH);
+
+  const privateKeyPath = path.join(__dirname, "../private.key");
+  const privateKey = fs.readFileSync(privateKeyPath);
+
+  const results = await dsApiClient.requestJWTUserToken(
+    process.env.INTEGRATION_KEY,
+    process.env.USER_ID,
+    "signature",
+    privateKey,
+    3600
+  );
+
+  return results.body.access_token;
+}
+
+
+//  method 2 
+
+// async function createLeaseEnvelope(leaseFormData) {
+//   const dsApiClient = new docusign.ApiClient();
+//   dsApiClient.setBasePath(process.env.BASE_PATH);
+
+//   const accessToken = await getAccessToken();
+//   dsApiClient.addDefaultHeader("Authorization", `Bearer ${accessToken}`);
+
+//   const envelopesApi = new docusign.EnvelopesApi(dsApiClient);
+
+//   const envelopeDefinition = new docusign.EnvelopeDefinition();
+//   envelopeDefinition.emailSubject = "Actions required for the lease agreement";
+
+//   const docContent = `
+//   Lease Agreement
+//   -------------------
+
+//   Property ID: ${leaseFormData.PropertyId}
+//   Start Date: ${leaseFormData.leaseTerm.startDate}
+//   End Date: ${leaseFormData.leaseTerm.endDate}
+//   Rent: ${leaseFormData.rentDetails.rent}
+//   Rent Due Date: ${leaseFormData.rentDetails.rentDueDate}
+//   Fees: ${leaseFormData.rentDetails.fees}
+//   Late Rent Fee: ${leaseFormData.rentDetails.lateRentFee}
+//   Move-In Fee: ${leaseFormData.rentDetails.moveInFee}
+//   Move-Out Fee: ${leaseFormData.rentDetails.moveOutFee}
+//   Parking Fee: ${leaseFormData.rentDetails.parkingFee}
+//   Security Deposit: ${leaseFormData.rentDetails.securityDeposit}
+//   Pet Policy: ${leaseFormData.options.baseOptions.petPolicy}
+//   Smoking Policy: ${leaseFormData.options.baseOptions.smokingPolicy}
+//   Renters Insurance Required: ${leaseFormData.options.baseOptions.requireRentersInsurance}
+//   Online Payment Setup Required: ${leaseFormData.options.baseOptions.requireOnlinePaymentSetup}
+//   Prorated Rent Amount: ${leaseFormData.options.proratedRent.amount}
+//   Prorated Rent Date: ${leaseFormData.options.proratedRent.date}
+//   Clauses: ${leaseFormData.clauses.map(clause => clause.name).join(", ")}
+//   Rules: ${leaseFormData.rules.map(rule => rule.text).join(", ")}
+//   Bed Bug Disclosure: ${leaseFormData.disclosures.bedBug}
+//   Habitability Disclosure: ${leaseFormData.disclosures.habitability}
+//   Lead Paint Disclosure: ${leaseFormData.disclosures.leadPaint}
+//   Mold Disclosure: ${leaseFormData.disclosures.mold}
+//   Utility Disclosure: ${leaseFormData.disclosures.utilityDisclosureFile}
+//   Lessor Full Name: ${leaseFormData.lessorInfo.fullName}
+//   Lessor Email: ${leaseFormData.lessorInfo.email}
+//   Lessor Phone Number: ${leaseFormData.lessorInfo.phoneNumber}
+//   Lessor Company Name: ${leaseFormData.lessorInfo.companyName}
+//   Lessor Company Phone: ${leaseFormData.lessorInfo.companyPhone}
+//   Emergency Phone: ${leaseFormData.lessorInfo.emergencyPhone}
+//   Lessor Address: ${leaseFormData.lessorInfo.lessorAddress}
+//   Terms and Agreement: ${leaseFormData.termsAndAgreement.content}
+// `;
+
+//   const documentBase64 = Buffer.from(docContent).toString("base64");
+
+//   envelopeDefinition.documents = [
+//     {
+//       documentBase64,
+//       name: "Lease Agreement",
+//       fileExtension: "txt",
+//       documentId: "1",
+//     },
+//   ];
+
+//   envelopeDefinition.recipients = {
+//     signers: [
+//       {
+//         email: leaseFormData.lessorInfo.email,
+//         name: leaseFormData.lessorInfo.fullName,
+//         recipientId: "1",
+//         routingOrder: "1",
+//       },
+//     ],
+//   };
+
+//   envelopeDefinition.status = "sent";
+
+//   const results = await envelopesApi.createEnvelope(process.env.ACCOUNT_ID, {
+//     envelopeDefinition,
+//   });
+
+//   return results.envelopeId;
+// }
