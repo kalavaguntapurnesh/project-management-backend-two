@@ -1,6 +1,8 @@
 const express = require("express");
 const userController = require("../controllers/user.controller.js");
 const authMiddleware = require("../middlewares/auth.middleware.js");
+const leaseController = require("../controllers/leaseuploads.controller.js");
+const upload = require("../config/multer.js");
 
 const router = express.Router();
 
@@ -9,7 +11,7 @@ router.post("/login", userController.loginUser);
 router.post("/updateProfile", authMiddleware, userController.updateProfile);
 router.get("/confirm/:token", userController.confirmToken);
 router.post("/forgotPassword", userController.forgotPassword);
-router.post("/resetPassword/:id/:token", userController.resetPassword);
+router.post("/resetPassword/:id/:token", userController.resetPassword); 
 router.post("/getUserData", authMiddleware, userController.getUserData);
 router.post("/addProperty", authMiddleware, userController.addProperty);
 router.post("/getProperties", authMiddleware, userController.getProperty);
@@ -21,5 +23,7 @@ router.get("/getAllActiveProperties", userController.getAllActiveProperties);
 router.post("/updateTenantDetailsInLandlordDashboard",userController.updateTenantDetailsInLandlordDashboard)
 router.post("/getLeaseProperty", userController.getLeaseProperty);
 router.post("/addingLeaseFormData", userController.addingLeaseFormData);
+router.post('/uploadLeaseAgreement', upload.single('leaseFile'), leaseController.uploadLeaseAgreement);
+router.get('/getLeaseFiles', leaseController.getLeaseFiles);
 
 module.exports = router;

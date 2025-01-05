@@ -667,6 +667,7 @@ exports.getLandlordDetailsInTenantDashboard = async (req, res) => {
   }
 };
 
+
 exports.updateLandlordDetailsInTenantDashboard = async (req, res) => {
   const { propertyId, landlordId } = req.body;
 
@@ -878,8 +879,8 @@ exports.addingLeaseFormData = async (req, res) => {
 
 // Function to create DocuSign envelope
 
-
 async function createLeaseEnvelope(leaseFormData) {
+  
   const dsApiClient = new docusign.ApiClient();
   dsApiClient.setBasePath(process.env.BASE_PATH);
 
@@ -894,13 +895,13 @@ async function createLeaseEnvelope(leaseFormData) {
   // Use the DocuSign template
   envelopeDefinition.templateId = process.env.TEMPLATE_ID;
 
-  // Template roles: Assign data to placeholders
+  
 
   envelopeDefinition.templateRoles = [
     {
       email: leaseFormData.lessorInfo.email,
       name: leaseFormData.lessorInfo.fullName,
-      roleName: "Lessor", // Ensure this matches the role in your template
+      roleName: "Lessor", 
       tabs: {
         textTabs: [
           // Lease Term Details
@@ -925,9 +926,42 @@ async function createLeaseEnvelope(leaseFormData) {
           { tabLabel: "ProratedRentDate", value: leaseFormData.options.proratedRent.date ? leaseFormData.options.proratedRent.date.toISOString().split("T")[0] : "" },
       
           // Clauses and Rules
-          { tabLabel: "Clauses", value: leaseFormData.clauses.map((clause) => clause.name).join(", ") },
-          { tabLabel: "Rules", value: leaseFormData.rules.map((rule) => rule.text).join("; ") },
-      
+          // { tabLabel: "Clauses", value: leaseFormData.clauses.map((clause) => clause.name).join(", "), height: 500,  width: 100 },
+          {
+            tabLabel: "Clauses",
+            // anchorString: "\\*Clauses",
+            value: leaseFormData.clauses
+              .filter((clause) => clause.name && clause.text) 
+              .map((clause) => `${clause.name}: ${clause.text}`)
+              .join("\n"), 
+            height: Math.min(
+              Math.ceil(leaseFormData.clauses.reduce((acc, clause) => acc + clause.text.length, 0) / 80) * 12,
+              5000 // Ensure the height is sufficient for multi-page content
+            ),
+            width: 430, // Fixed width (consider making it dynamic for larger documents)
+            maxLength: leaseFormData.clauses.reduce(
+              (acc, clause) => acc + clause.name.length + clause.text.length,
+              0
+            ), // Use for validations if needed
+          },
+
+
+          // { tabLabel: "Rules", value: leaseFormData.rules.map((rule) => rule.text).join("; ") },
+
+          {
+            tabLabel: "Rules",
+            value: leaseFormData.rules
+              .filter((rule) => rule.text) // Ensure valid rules
+              .map((rule) => rule.text)
+              .join("\n"), 
+            height: Math.min(
+              Math.ceil(leaseFormData.rules.reduce((acc, rule) => acc + rule.text.length, 0) / 80) * 12,
+              5000 // Ensure minimum height for multi-page content
+            ),
+            width: 430, // Fixed width
+            maxLength: leaseFormData.rules.reduce((acc, rule) => acc + rule.text.length, 0), // Total character length
+          },
+
           // Disclosures
           { tabLabel: "HabitabilityDisclosure", value: leaseFormData.disclosures.habitability.details || "false" },
           { tabLabel: "LeadPaintDisclosure", value: leaseFormData.disclosures.leadPaint.details || "false" },
@@ -941,10 +975,21 @@ async function createLeaseEnvelope(leaseFormData) {
           { tabLabel: "CompanyName", value: leaseFormData.lessorInfo.companyName },
           { tabLabel: "CompanyPhone", value: leaseFormData.lessorInfo.companyPhone },
           { tabLabel: "EmergencyPhone", value: leaseFormData.lessorInfo.emergencyPhone },
-          { tabLabel: "LessorAddress", value: leaseFormData.lessorInfo.lessorAddress },
+          { tabLabel: "LessorAddress", value: leaseFormData.lessorInfo.lessorAddress, width: 180 },
       
           // Terms and Agreements
-          { tabLabel: "TermsAndAgreement", value: leaseFormData.termsAndAgreement.content },
+          // { tabLabel: "TermsAndsAgreement", value: leaseFormData.termsAndAgreement.content },
+          {
+            tabLabel: "TermsAndAgreement",
+            value: leaseFormData.termsAndAgreement.content, // Use the full content as provided
+            height: Math.min(
+              Math.ceil(leaseFormData.termsAndAgreement.content.length / 80) * 12,
+              5000 // Minimum height to support multi-page content
+            ),
+            width: 430, // Fixed width
+            maxLength: leaseFormData.termsAndAgreement.content.length, // Total character length for validation
+          }
+          
         ],
       },
     },

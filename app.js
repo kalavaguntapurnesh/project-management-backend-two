@@ -12,6 +12,7 @@ const connectDB = require("./config/db.js");
 const userRoutes = require("./routes/user.route.js");
 const LandlordLeaseAgreement = require("./models/landlordLeaseAgreement.js");
 
+
 dotenv.config();
 connectDB();
 
@@ -19,6 +20,9 @@ console.log("Connected to MongoDB. Now going further...");
 console.log("DocuSign ACCOUNT_ID:", process.env.ACCOUNT_ID);
 
 const app = express();
+
+// to see the documents in UI
+app.use("/uploads", express.static("uploads"))
 
 // Middleware
 app.use(express.json());
